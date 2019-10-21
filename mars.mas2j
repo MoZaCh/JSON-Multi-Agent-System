@@ -7,6 +7,6 @@ MAS mars {
 
     environment: MarsEnv("mars.mas2j")
 
-    agents: example #1;
+    agents: goldMiner #1;
 	
 }
