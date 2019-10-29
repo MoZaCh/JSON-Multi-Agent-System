@@ -32,15 +32,13 @@ randomNumber(R, Max, N) :- N = ((Max-1)*R) div 1.  //Generates a random cell to 
 +!tryPick : pos(MinerX,MinerY) & garb(MinerX,MinerY) <- pick(garb); !tryPick.
 +!tryPick : pos(MinerX,MinerY) & not garb(MinerX,MinerY) <- true.   
 
-+!tryGoTo(X,Y) <- .abolish(visited(_,_)); .abolish(preMove(_,_,_)); !goTo(X,Y).
++!tryGoTo(X,Y) <- .abolish(visited(_,_)); .abolish(prevMove(_,_,_)); !goTo(X,Y).
 
 +!goTo(X,Y) : pos(X,Y) <- true.
 +!goTo(X,Y) : obs(X,Y) <- true.
 +!goTo(X,Y) : not garb(X,Y) & garb(GridX,GridY) & not busy <- true.
-+!goTo(X,Y) : pos(MinerX,MinerY) & nextAvailableMove(MinerX,MinerY,D,X1,Y1)
-	<- +visited(MinerX,MinerY); !goTowards(X,Y); +preMove(X1,Y1,D); !goTo(X,Y).
-+!goTo(X,Y) : pos(MinerX,MinerY) & preMove(MinerX,MinerY,D1) & inverse(D1,D2)
-	<- +visited(MinerX,MinerY); move(D2); !goTo(X,Y).
++!goTo(X,Y) : pos(MinerX,MinerY) & nextAvailableMove(MinerX,MinerY,D,X1,Y1) <- +visited(MinerX,MinerY); !goTowards(X,Y); +prevMove(X1,Y1,D); !goTo(X,Y).
++!goTo(X,Y) : pos(MinerX,MinerY) & prevMove(MinerX,MinerY,D1) & inverse(D1,D2) <- +visited(MinerX,MinerY); move(D2); !goTo(X,Y).
 +!goTo(X,Y) <- true.
 
 +!goTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y<MinerY & nextAvailableMove(MinerX,MinerY,left,_,_) <- !direction(X,Y,left).
@@ -84,4 +82,4 @@ randomNumber(R, Max, N) :- N = ((Max-1)*R) div 1.  //Generates a random cell to 
 +!goTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y>MinerY & nextAvailableMove(MinerX,MinerY,left,_,_) <- !direction(X,Y,left).
 
 +!direction(X,Y,D): pos(MinerX,MinerY) & nextMove(MinerX,MinerY,D,X1,Y1)
-	<- +visited(MinerX,MinerY); move(D); +preMove(X1,Y1,D).
+	<- +visited(MinerX,MinerY); move(D); +prevMove(X1,Y1,D).
