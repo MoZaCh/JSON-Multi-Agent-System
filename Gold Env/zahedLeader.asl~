@@ -77,12 +77,12 @@ inverse(right,left).
 //
 +!moveTo(X,Y) : pos(MinerX,MinerY) & preMove(MinerX,MinerY,D1) & inverse (D1,D2)
 	<- +visited(MinerX,MinerY);
-	//?cell(Xa,Ya,ally)
-	//if ( Xa \== MinerX | Ya \== MinerY) {
-		//.abolish(visited(_,_));
-		//if (carrying_gold) { ?depot(SimID,Xd,Yd); !attemptMove(Xd,Yd); do(drop); -busy; !goPickUp; }
-		//else { !goPickUp }
-	//}
+	?cell(Xa,Ya,ally)
+	if ( Xa \== MinerX | Ya \== MinerY) {
+		.abolish(visited(_,_));
+		if (carrying_gold) { ?depot(SimID,Xd,Yd); !attemptMove(Xd,Yd); do(drop); -busy; !goPickUp; }
+		else { !goPickUp }
+	}
 	do(D2);
 	!moveTo(X,Y).
 

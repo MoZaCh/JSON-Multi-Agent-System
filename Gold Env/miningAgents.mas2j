@@ -12,5 +12,5 @@ MAS miners {
 		//...
 		
 	agents: zahedLeader #1;
-			zahedMinion #2;
+			zahedMinion #5;
 }
