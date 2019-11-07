@@ -75,9 +75,9 @@ randomNum(R, Max, N) :- N = ((Max-1)*R) div 1.
 	do(D2);
 	!moveTo(X,Y).
 	
-+!moveTo(X,Y) 
++!moveTo(X,Y)
 	<- true.
-
+	
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
 	<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,left).
