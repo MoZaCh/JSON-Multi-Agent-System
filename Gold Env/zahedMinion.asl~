@@ -56,9 +56,6 @@ randomNum(R, Max, N) :- N = ((Max-1)*R) div 1.
 +!moveTo(X,Y) : cell(X,Y,obstacle) 
 	<- true.
 	
-//+!moveTo(X,Y) : not cell(X,Y,gold) & cell(GridX,GridY,gold) //& not busy 
-//	<- .print("im hereeeeee").
-	
 +!moveTo(X,Y) : pos(MinerX,MinerY) & nxtAvailable(MinerX,MinerY,D,X1,Y1)
 	<- +visited(MinerX,MinerY);
 	!moveTowards(X,Y);
@@ -78,109 +75,62 @@ randomNum(R, Max, N) :- N = ((Max-1)*R) div 1.
 +!moveTo(X,Y)
 	<- true.
 	
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
-	<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
+//Left Block
++!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & nxtAvailable(MinerX,MinerY,left,_,_) 
+		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,left).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,up,_,_)
-	<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
++!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & nxtAvailable(MinerX,MinerY,up,_,_) 
+		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,up).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
++!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & nxtAvailable(MinerX,MinerY,down,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,down).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,right,_,_)
++!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & nxtAvailable(MinerX,MinerY,right,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,right).
 
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,left).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
+//Up Block
++!moveTowards(X,Y): pos(MinerX,MinerY) & Y<MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,up).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,down).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,right).
-
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
++!moveTowards(X,Y): pos(MinerX,MinerY) & Y<MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,left).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,down).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,up).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
++!moveTowards(X,Y): pos(MinerX,MinerY) & Y<MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,right).
-
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,up).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,left).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,right).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
++!moveTowards(X,Y): pos(MinerX,MinerY) & Y<MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,down).
 
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
+//Down Block
++!moveTowards(X,Y): pos(MinerX,MinerY) & Y>MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,down).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
++!moveTowards(X,Y): pos(MinerX,MinerY) & Y>MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,left).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
++!moveTowards(X,Y): pos(MinerX,MinerY) & Y>MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,right).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
++!moveTowards(X,Y): pos(MinerX,MinerY) & Y>MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,up).
 
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,up).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
+//Right Block
++!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & nxtAvailable(MinerX,MinerY,right,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,right).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,left).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,down).
-
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,right).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
++!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & nxtAvailable(MinerX,MinerY,up,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,up).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
++!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & nxtAvailable(MinerX,MinerY,down,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,down).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
++!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & nxtAvailable(MinerX,MinerY,left,_,_) 
 		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
 	!direction(X,Y,left).
 
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,right).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,down).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,up).
-+!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
-		<- if (cell(MovX,MovY,gold) & not goldLocated(X,Y)) {!locateGold; }
-	!direction(X,Y,left).
 
 +!direction(X,Y,D): pos(MinerX,MinerY) & nxtMove(MinerX,MinerY,D,X1,Y1)
 	<- +visited(MinerX,MinerY);
@@ -188,4 +138,3 @@ randomNum(R, Max, N) :- N = ((Max-1)*R) div 1.
 	+preMove(X1,Y1,D).
 	
 +goldLocated(X,Y)[source(Agent)]: true <- .print(Agent, " broadcasted ", goldLocated(X,Y)).
-

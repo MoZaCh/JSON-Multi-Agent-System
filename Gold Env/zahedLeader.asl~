@@ -87,80 +87,113 @@ inverse(right,left).
 	!moveTo(X,Y).
 
 //Agent to do nothing once it has moved to the cell
-+!moveTo(X,Y) 
++!moveTo(X,Y)
 	<- true.
 
+//Up Left Block
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
-	<- !direction(X,Y,left).
+	<- if (cell(MinerX-1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,left).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
-	<- !direction(X,Y,up).
+	<- if (cell(MinerX,MinerY-1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,up).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
-	<- !direction(X,Y,down).
+	<- if (cell(MinerX,MinerY-1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,down).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
-	<- !direction(X,Y,right).
+	<- if (cell(MinerX+1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,right).
 
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
-	<- !direction(X,Y,left).
+	<- if (cell(MinerX-1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");} 
+	!direction(X,Y,left).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
-	<- !direction(X,Y,up).
+	<- if (cell(MinerX,MinerY-1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,up).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
-	<- !direction(X,Y,down).
+	<- if (cell(MinerX,MinerY+1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,down).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
-	<- !direction(X,Y,right).
+	<- if (cell(MinerX+1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,right).
 
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
-	<- !direction(X,Y,left).
+	<- if (cell(MinerX-1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,left).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
-	<- !direction(X,Y,down).
+	<- if (cell(MinerX,MinerY+1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,down).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
-	<- !direction(X,Y,up).
+	<- if (cell(MinerX,MinerY-1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,up).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X<MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
-	<- !direction(X,Y,right).
+	<- if (cell(MinerX+1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,right).
 
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
-	<- !direction(X,Y,up).
+	<- if (cell(MinerX,MinerY-1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,up).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
-	<- !direction(X,Y,left).
+	<- if (cell(MinerX-1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,left).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
-	<- !direction(X,Y,right).
+	<- if (cell(MinerX+1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,right).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
-	<- !direction(X,Y,down).
+	<- if (cell(MinerX,MinerY+1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,down).
 
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
-	<- !direction(X,Y,down).
+	<- if (cell(MinerX,MinerY+1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,down).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
-	<- !direction(X,Y,left).
+	<- if (cell(MinerX-1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,left).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
-	<- !direction(X,Y,right).
+	<- if (cell(MinerX+1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,right).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X==MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
-	<- !direction(X,Y,up).
+	<- if (cell(MinerX,MinerY-1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,up).
 
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
-	<- !direction(X,Y,up).
+	<- if (cell(MinerX,MinerY-1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,up).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
-	<- !direction(X,Y,right).
+	<- if (cell(MinerX+1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,right).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
-	<- !direction(X,Y,left).
+	<- if (cell(MinerX-1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,left).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y<MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
-	<- !direction(X,Y,down).
+	<- if (cell(MinerX,MinerY+1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,down).
 
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
-	<- !direction(X,Y,right).
+	<- if (cell(MinerX+1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,right).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
-	<- !direction(X,Y,up).
+	<- if (cell(MinerX,MinerY-1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,up).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
-	<- !direction(X,Y,down).
+	<- if (cell(MinerX,MinerY+1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,down).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y==MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
-	<- !direction(X,Y,left).
+	<- if (cell(MinerX-1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,left).
 
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,right,_,_) 
-	<- !direction(X,Y,right).
+	<- if (cell(Mi,MinerY-1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,right).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,down,_,_) 
-	<- !direction(X,Y,down).
+	<- if (cell(MinerX,MinerY+1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,down).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,up,_,_) 
-	<- !direction(X,Y,up).
+	<- if (cell(MinerX,MinerY-1,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,up).
 +!moveTowards(X,Y): pos(MinerX,MinerY) & X>MinerX & Y>MinerY & nxtAvailable(MinerX,MinerY,left,_,_) 
-	<- !direction(X,Y,left).
+	<- if (cell(MinerX-1,MinerY,ally) & carrying_gold) {.wait(1000); .print("Waited");}
+	!direction(X,Y,left).
 
 +!direction(X,Y,D): pos(MinerX,MinerY) & nxtMove(MinerX,MinerY,D,X1,Y1)
 	<- +visited(MinerX,MinerY);
