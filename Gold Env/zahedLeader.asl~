@@ -35,6 +35,8 @@ inverse(right,left).
 	?depot(SimID,Xd,Yd);
 	!attemptMove(Xd,Yd);
 	do(drop);}
+	//.abolish(goldLocated(X,Y)
+	//.abolish(pickedUp(X,Y)
 	!attemptMove(16,17);
 	!goPickUp.
 
@@ -80,7 +82,7 @@ inverse(right,left).
 	?cell(Xa,Ya,ally)
 	if ( Xa \== MinerX | Ya \== MinerY) {
 		.abolish(visited(_,_));
-		if (carrying_gold) { ?depot(SimID,Xd,Yd); !attemptMove(Xd,Yd); do(drop); -busy; !goPickUp; }
+		if (carrying_gold) { ?depot(SimID,Xd,Yd); !attemptMove(Xd,Yd); do(drop); -busy; !attemptMove(16,17); !goPickUp; }
 		else { !goPickUp }
 	}
 	do(D2);

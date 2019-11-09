@@ -1,7 +1,7 @@
-//Beliefs
+/* Beliefs */
 
 //Checking that a coordinate is within the grid
-inGrid(X,Y) :- gsize(ID,GridX,GridY) & X>=0 & X<GridX & Y>=0 & Y<GridY.
+insideGrid(X,Y) :- gsize(ID,GridX,GridY) & X>=0 & X<GridX & Y>=0 & Y<GridY.
 
 //Set of moves and directions that the agent can take
 nxtMove(MinerX,MinerY,up,X,Y) :- X=MinerX & Y=MinerY-1.
@@ -10,30 +10,32 @@ nxtMove(MinerX,MinerY,left,X,Y) :- X=MinerX-1 & Y=MinerY.
 nxtMove(MinerX,MinerY,right,X,Y) :- X=MinerX+1 & Y=MinerY.
 
 //Checking that all these condtions are met for the next available move
-nxtAvailable(MinerX,MinerY,D,X,Y) :- pos(MinerX,MinerY) & nxtMove(MinerX,MinerY,D,X,Y) & inGrid(X,Y) & not cell(X,Y,obstacle) & not visited(X,Y) & not cell(X,Y,ally).
+nxtAvailable(MinerX,MinerY,D,X,Y) :- pos(MinerX,MinerY) & nxtMove(MinerX,MinerY,D,X,Y) & insideGrid(X,Y) & not cell(X,Y,obstacle) & not visited(X,Y) & not cell(X,Y,ally).
 
-//Oposite of each direction
+//Opposite of each direction
 inverse(up,down).
 inverse(down,up).
 inverse(left,right).
 inverse(right,left).
 
 
-//Goals
+/* Goals */
+
 !goPickUp.
 
 
-//Plans	
+/* Plans */
+
 +goldLocated(X,Y)[source(Agent)]: true <- .print(Agent, " broadcasted ", goldLocated(X,Y)).
 
-//Agent receives broadcasted goldLocated and if it hasn't been picked up
+//Agent receives broadcasted goldLocated and if it hasn't already been picked up
 +!goPickUp : goldLocated(X,Y) & not pickedUp(X,Y)
 	<- ?pos(MinerX,MinerY); 
 	!attemptMove(X,Y); 
 	!tryMine;
 	if (carrying_gold) {
-	?depot(SimID,Xd,Yd);
-	!attemptMove(Xd,Yd);
+	?depot(SimID,Xdepot,Ydepot);
+	!attemptMove(Xdepot,Ydepot);
 	do(drop);}
 	//.abolish(goldLocated(X,Y)
 	//.abolish(pickedUp(X,Y)
@@ -58,7 +60,7 @@ inverse(right,left).
 //Agent forgets where it has previously been so it has a direct path
 +!attemptMove(X,Y) 
 	<- .abolish(visited(_,_));
-	.abolish(preMove(_,_,_));
+	.abolish(prevMove(_,_,_));
 	!moveTo(X,Y).
 
 //Agent to do nothing once it has reached the cell
@@ -69,20 +71,26 @@ inverse(right,left).
 +!moveTo(X,Y) : cell(X,Y,obstacle) 
 	<- true.
 	
-//Agent to move to cell that is available and add the current cell to visited and the cell it next moved to preMove
+//Agent to move to cell that is available and add the current cell to visited and the cell it next moved to prevMove
 +!moveTo(X,Y) : pos(MinerX,MinerY) & nxtAvailable(MinerX,MinerY,D,X1,Y1)
 	<- +visited(MinerX,MinerY);
 	!moveTowards(X,Y);
-	+preMove(X1,Y1,D);
+	+prevMove(X1,Y1,D);
 	!moveTo(X,Y).
 
-//
-+!moveTo(X,Y) : pos(MinerX,MinerY) & preMove(MinerX,MinerY,D1) & inverse (D1,D2)
+//Agent to reverse the path in order to get out of a dead end situation
++!moveTo(X,Y) : pos(MinerX,MinerY) & prevMove(MinerX,MinerY,D1) & inverse (D1,D2)
 	<- +visited(MinerX,MinerY);
-	?cell(Xa,Ya,ally)
-	if ( Xa \== MinerX | Ya \== MinerY) {
+	?cell(AllyX,AllyY,ally)
+	if ( AllyX \== MinerX | AllyY \== MinerY) {
 		.abolish(visited(_,_));
-		if (carrying_gold) { ?depot(SimID,Xd,Yd); !attemptMove(Xd,Yd); do(drop); -busy; !attemptMove(16,17); !goPickUp; }
+		if (carrying_gold) { 
+		?depot(SimID,Xdepot,Ydepot);
+		!attemptMove(Xdepot,Ydepot);
+		do(drop); 
+		-busy; 
+		!attemptMove(16,17);
+		!goPickUp; }
 		else { !goPickUp }
 	}
 	do(D2);
@@ -200,4 +208,4 @@ inverse(right,left).
 +!direction(X,Y,D): pos(MinerX,MinerY) & nxtMove(MinerX,MinerY,D,X1,Y1)
 	<- +visited(MinerX,MinerY);
 	do(D);
-	+preMove(X1,Y1,D).
+	+prevMove(X1,Y1,D).
