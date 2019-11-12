@@ -1,0 +1,17 @@
+//Belief
+
+
+//goal
+!cgold.
+!commWithAgents.
+
+//Plan
++!cgold: not cell(X,Y,gold)
+<- ?pos(X0,Y0);
+!nextRandom;
+!cgold.
+
++!cgold:cell(X,Y,gold)
+<-?pos(X0,Y0);
+
+

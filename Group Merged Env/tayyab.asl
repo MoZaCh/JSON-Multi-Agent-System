@@ -1,0 +1,217 @@
+
+//Beliefs
+//initial belief for agent to be aware of the size of the grid and stay within the grid
+checkGrid(X,Y) :- gsize(ID,Xgrid,Ygrid) & X>=0 & X<Xgrid & Y>=0 & Y<Ygrid.
+/*
+
+*/
+nxtMotion(AgentX,AgentY,up,X,Y) :- X=AgentX & Y=AgentY-1.
+nxtMotion(AgentX,AgentY,down,X,Y) :- X=AgentX & Y=AgentY+1.
+nxtMotion(AgentX,AgentY,left,X,Y) :- X=AgentX-1 & Y=AgentY.
+nxtMotion(AgentX,AgentY,right,X,Y) :- X=AgentX+1 & Y=AgentY.
+
+//a belief for the agent to move into the next free cell if not been visisted or there is no obstacle or no ally.
+nxtPossibleCell(AgentX,AgentY,M,X,Y) :-
+	pos(AgentX,AgentY) & nxtMotion(AgentX,AgentY,M,X,Y) & checkGrid(X,Y)& not visited(X,Y)&  not cell(X,Y,obstacle)  & not cell(X,Y,ally).
+
+	
+reverse(up,down).
+reverse(down,up).
+reverse(left,right).
+reverse(right,left).
+//random number belief - generates random number for agent to move into a random cell
+randNo(R, Maximum, N) :- N = ((Maximum-1)*R) div 1.
+
+
+//Goals
+!findGold.
+//Plans
+
++pickedUp(X,Y): goldLocated(X,Y) <- .abolish(goldLocated(X,Y)); .abolish(pickedUp(X,Y)).
+
+//plan for if the agent percepts a cell with gold
++!findGold : cell(X,Y,gold) 
+	<- ?pos(AgentX,AgentY)
+	if (not goldLocated(X,Y)){
+	.broadcast(tell, goldLocated(X,Y)); //informing leader agent if gold is found so leader can collect it
+	+goldLocated(X,Y);//new belief added to agent if it finds gold
+	.print(pos(AgentX,AgentY),goldLocated(X,Y))
+	!randNxtCell;
+	!findGold}.
+	
++!findGold : not cell(X,Y,gold) | goldLocated(X,Y)//plan for if gold isn't found - continue looking
+ <- !randNxtCell;
+	!findGold.
+	  
++!randNxtCell : .random(RX) & .random(RY)& gsize(ID,Horizontal, Vertical) &randNo(RX, Horizontal, X) & randNo(RY, Vertical, Y)	& not visited(X,Y)
+<- !attemptToGo(X,Y).
++!randNxtCell <- !randNxtCell.
+	
++!attemptToGo(X,Y) //plan to go to previously visited cells by removing the visited and premove beliefs
+	<- .abolish(visited(_,_));
+	.abolish(recentMove(_,_,_));
+	!advanceTo(X,Y).
+
++!advanceTo(X,Y) : pos(X,Y)<- true.
+
++!advanceTo(X,Y) : cell(X,Y,obstacle) <- true.
+
+//plan to move to next free cell and adding it to visited 
++!advanceTo(X,Y) : pos(AgentX,AgentY) & nxtPossibleCell(AgentX,AgentY,M,X1,Y1)
+	<- +visited(AgentX,AgentY);
+	!advanceTowards(X,Y); 
+	+recentMove(X1,Y1,M);
+	!advanceTo(X,Y).
+	
+//Agent abolishes visited to avoid being stuck in a dead end situation
++!advanceTo(X,Y) : pos(AgentX,AgentY) & recentMove(AgentX,AgentY,M1) &reverse(M1,M2)
+	<-+visited(AgentX,AgentY);
+	 ?cell(AgentFriendX,AgentFriendY,ally)
+	 if (AgentFriendX \==AgentX | AgentFriendY \==AgentY){
+	 .abolish(visited(_,_));
+	 !findGold;
+	 }
+	 do(M2).//; !advanceTo(X,Y).
+	 
++!advanceTo(X,Y) <- true.
+
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X<AgentX & Y<AgentY & nxtPossibleCell(AgentX,AgentY,left,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(X,Y))
+	{!findGold;} 
+	!movement(X,Y,left).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X<AgentX & Y<AgentY & nxtPossibleCell(AgentX,AgentY,up,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(X,Y))
+	{!findGold;}
+	!movement(X,Y,up).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X<AgentX & Y<AgentY & nxtPossibleCell(AgentX,AgentY,down,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(X,Y))
+	{!findGold;}
+	!movement(X,Y,down).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X<AgentX & Y<AgentY & nxtPossibleCell(AgentX,AgentY,right,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(X,Y))
+	{!findGold;} 
+	!movement(X,Y,right).
+
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X<AgentX & Y==AgentY & nxtPossibleCell(AgentX,AgentY,left,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,left).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X<AgentX & Y==AgentY & nxtPossibleCell(AgentX,AgentY,up,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,up).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X<AgentX & Y==AgentY & nxtPossibleCell(AgentX,AgentY,down,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,down).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X<AgentX & Y==AgentY & nxtPossibleCell(AgentX,AgentY,right,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,right).
+
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X<AgentX & Y>AgentY & nxtPossibleCell(AgentX,AgentY,left,_,_)
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,left).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X<AgentX & Y>AgentY & nxtPossibleCell(AgentX,AgentY,down,_,_)
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,down).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X<AgentX & Y>AgentY & nxtPossibleCell(AgentX,AgentY,up,_,_)
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,up).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X<AgentX & Y>AgentY & nxtPossibleCell(AgentX,AgentY,right,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,right).
+
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X==AgentX & Y<AgentY & nxtPossibleCell(AgentX,AgentY,up,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;} 
+	!movement(X,Y,up).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X==AgentX & Y<AgentY & nxtPossibleCell(AgentX,AgentY,left,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,left).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X==AgentX & Y<AgentY & nxtPossibleCell(AgentX,AgentY,right,_,_)
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,right).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X==AgentX & Y<AgentY & nxtPossibleCell(AgentX,AgentY,down,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,down).
+
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X==AgentX & Y>AgentY & nxtPossibleCell(AgentX,AgentY,down,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,down).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X==AgentX & Y>AgentY & nxtPossibleCell(AgentX,AgentY,left,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,left).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X==AgentX & Y>AgentY & nxtPossibleCell(AgentX,AgentY,right,_,_)
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;} 
+	!movement(X,Y,right).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X==AgentX & Y>AgentY & nxtPossibleCell(AgentX,AgentY,up,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,up).
+
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X>AgentX & Y<AgentY & nxtPossibleCell(AgentX,AgentY,up,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,up).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X>AgentX & Y<AgentY & nxtPossibleCell(AgentX,AgentY,right,_,_)
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,right).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X>AgentX & Y<AgentY & nxtPossibleCell(AgentX,AgentY,left,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,left).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X>AgentX & Y<AgentY & nxtPossibleCell(AgentX,AgentY,down,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,down).
+
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X>AgentX & Y==AgentY & nxtPossibleCell(AgentX,AgentY,right,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,right).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X>AgentX & Y==AgentY & nxtPossibleCell(AgentX,AgentY,up,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,up).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X>AgentX & Y==AgentY & nxtPossibleCell(AgentX,AgentY,down,_,_)
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,down).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X>AgentX & Y==AgentY & nxtPossibleCell(AgentX,AgentY,left,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,left).
+
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X>AgentX & Y>AgentY & nxtPossibleCell(AgentX,AgentY,right,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,right).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X>AgentX & Y>AgentY & nxtPossibleCell(AgentX,AgentY,down,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,down).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X>AgentX & Y>AgentY & nxtPossibleCell(AgentX,AgentY,up,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,up).
++!advanceTowards(X,Y): pos(AgentX,AgentY) & X>AgentX & Y>AgentY & nxtPossibleCell(AgentX,AgentY,left,_,_) 
+<- if (cell(XAgent,YAgent,gold) & not goldLocated(XAgent,YAgent))
+	{!findGold;}
+	!movement(X,Y,left).
+
++!movement(X,Y,M): pos(AgentX,AgentY) & nxtMotion(AgentX,AgentY,M,X1,Y1)
+	<-
+	+visited(AgentX,AgentY); do(M); +recentMove(X1,Y1,M).
+
