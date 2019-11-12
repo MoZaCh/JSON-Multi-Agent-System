@@ -37,8 +37,11 @@ inverse(right,left).
 	?depot(SimID,Xdepot,Ydepot);
 	!attemptMove(Xdepot,Ydepot);
 	do(drop);}
-	//.abolish(goldLocated(X,Y)
-	//.abolish(pickedUp(X,Y)
+	///////////
+	.broadcast(tell,pickedUp(X,Y));
+	.abolish(goldLocated(X,Y));
+	.abolish(pickedUp(X,Y));
+	///////////
 	!attemptMove(16,17);
 	!goPickUp.
 
@@ -89,6 +92,11 @@ inverse(right,left).
 		!attemptMove(Xdepot,Ydepot);
 		do(drop); 
 		-busy; 
+		///////////
+		.broadcast(tell,pickedUp(X,Y));
+		.abolish(goldLocated(X,Y));
+		.abolish(pickedUp(X,Y));
+		///////////
 		!attemptMove(16,17);
 		!goPickUp; }
 		else { !goPickUp }

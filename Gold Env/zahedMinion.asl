@@ -31,6 +31,10 @@ randomNum(R, Max, N) :- N = ((Max-1)*R) div 1.
 	
 +!nxtRandom <- !nxtRandom.
 
+/////
++pickedUp(X,Y): goldLocated(X,Y) <- .abolish(goldLocated(X,Y)); .abolish(pickedUp(X,Y)).
+////
+
 +!locateGold : cell(X,Y,gold)
 	<- ?pos(MinerX,MinerY); 
 	//.send(zahedLeader,tell,goldLocated(X,Y));
